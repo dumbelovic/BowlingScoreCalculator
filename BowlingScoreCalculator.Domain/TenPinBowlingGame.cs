@@ -23,12 +23,31 @@ namespace BowlingScoreCalculator.Domain
 
         public void ThrowBall(byte pinsDowned)
         {
+            if (_gameCompeted)
+            {
+                throw new System.Exception("Can not throw ball when game is completed.");
+            }
+
             _currentFrame.ThrowBall(pinsDowned);
+
+            if (_currentFrame.IsCompleted())
+            {
+                if (_currentFrame.IsLastFrame())
+                {
+                    _gameCompeted = true;
+                }
+                else
+                {
+                    _currentFrame = _currentFrame.NextFrame;
+                }
+            }
         }
 
         public List<string> FrameProgressScores()
         {
-            return _frames.Select(f => f.ProgressScore.HasValue ? f.ProgressScore.ToString()! : "*").ToList();
+            return _frames
+                .Where(f => f.Position <= _currentFrame.Position)
+                .Select(f => f.ProgressScore.HasValue ? f.ProgressScore.ToString()! : "*").ToList();
         }
 
         private IReadOnlyCollection<Frame> InitFrames()

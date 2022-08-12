@@ -29,27 +29,32 @@ namespace BowlingScoreCalculator.Domain
             _prevFrame.SetNextFrame(this);
         }
 
-        public static Frame First()
+        internal bool IsCompleted()
+        {
+            return IsStrike() || _secondThrow.HasValue;
+        }
+
+        internal static Frame First()
         {
             return new Frame();
         }
 
-        public static Frame After(Frame prevFrame)
+        internal static Frame After(Frame prevFrame)
         {
             return new Frame(prevFrame);
         }
 
-        public static Frame Last(Frame prevFrame)
+        internal static Frame Last(Frame prevFrame)
         {
             return new LastFrame(prevFrame);
         }
 
-        public void SetNextFrame(Frame frame)
+        internal void SetNextFrame(Frame frame)
         {
             _nextFrame = frame;
         }
 
-        public bool TryToGetNextTwo(out int sumNextTwo)
+        internal bool TryToGetNextTwo(out int sumNextTwo)
         {
             sumNextTwo = 0;
 
@@ -63,7 +68,7 @@ namespace BowlingScoreCalculator.Domain
                         return true;
                     }
                 }
-                else if (TryToGetNextOne(out int nextOne))
+                else if (_nextFrame.TryToGetNextOne(out int nextOne))
                 {
                     sumNextTwo = MaxPossiblePinsDownedInOneFrame + nextOne;
                     return true;
@@ -78,7 +83,7 @@ namespace BowlingScoreCalculator.Domain
             return false;
         }
 
-        public bool TryToGetNextOne(out int nextOne)
+        internal bool TryToGetNextOne(out int nextOne)
         {
             nextOne = 0;
 
@@ -88,7 +93,8 @@ namespace BowlingScoreCalculator.Domain
             nextOne = _firstThrow.Value;
             return true;
         }
-        public void ThrowBall(byte pinsDowned)
+
+        internal void ThrowBall(byte pinsDowned)
         {
             ThrowBallGuard(pinsDowned);
             
@@ -104,7 +110,7 @@ namespace BowlingScoreCalculator.Domain
             TryToSetScore();
         }
 
-        public void TryToSetScore()
+        internal void TryToSetScore()
         {
             if (!IsFirstFrame() && !_prevFrame.ProgressScore.HasValue)
                 _prevFrame.TryToSetScore();
@@ -120,12 +126,15 @@ namespace BowlingScoreCalculator.Domain
                 throw new FrameException(Position, $"Can not down more then {MaxPossiblePinsDownedInOneFrame} pins in one throw.");
             }
 
-            if (_firstThrow.HasValue)
+            if (IsStrike())
             {
-                if (_firstThrow + pinsDowned > MaxPossiblePinsDownedInOneFrame)
-                {
-                    throw new FrameException(Position, $"Can not down more than {MaxPossiblePinsDownedInOneFrame} in one frame.");
-                }
+                // this exception is because possible bug in engine
+                throw new System.Exception("Can not throw second ball when first is strike");
+            }
+
+            if (_firstThrow.HasValue && _firstThrow + pinsDowned > MaxPossiblePinsDownedInOneFrame)
+            {
+                throw new FrameException(Position, $"Can not down more than {MaxPossiblePinsDownedInOneFrame} in one frame.");
             }
 
             if (_firstThrow.HasValue && _secondThrow.HasValue)
@@ -147,14 +156,7 @@ namespace BowlingScoreCalculator.Domain
                 }
                 else if (_nextFrame.TryToGetNextTwo(out int sumNextTwo))
                 {
-                    if (IsFirstFrame())
-                    {
-                        _progressScore = MaxPossiblePinsDownedInOneFrame + sumNextTwo;
-                    }
-                    else
-                    {
-                        _progressScore = _prevFrame.ProgressScore + MaxPossiblePinsDownedInOneFrame + sumNextTwo;
-                    }
+                    _progressScore = GetPrevProgressScore() + MaxPossiblePinsDownedInOneFrame + sumNextTwo;
                 }
             }
             else if (IsSpare())
@@ -167,14 +169,7 @@ namespace BowlingScoreCalculator.Domain
                 {
                     if (_nextFrame.TryToGetNextOne(out int nextOne))
                     {
-                        if (IsFirstFrame())
-                        {
-                            _progressScore = MaxPossiblePinsDownedInOneFrame + nextOne;
-                        }
-                        else
-                        {
-                            _progressScore = _prevFrame.ProgressScore + MaxPossiblePinsDownedInOneFrame + nextOne;
-                        }
+                        _progressScore = GetPrevProgressScore() + MaxPossiblePinsDownedInOneFrame + nextOne;
                     }
                 }
             }
@@ -188,17 +183,18 @@ namespace BowlingScoreCalculator.Domain
                 {
                     if (_firstThrow.HasValue && _secondThrow.HasValue)
                     {
-                        _progressScore = _firstThrow.Value + _secondThrow.Value;
+                        _progressScore = GetPrevProgressScore() + _firstThrow.Value + _secondThrow.Value;
                     }
                 }
             }
         }
 
         [MemberNotNullWhen(returnValue: false, member: nameof(_nextFrame))]
-        private bool IsLastFrame() => _nextFrame == null;
+        [MemberNotNullWhen(returnValue: false, member: nameof(NextFrame))]
+        internal bool IsLastFrame() => _nextFrame == null;
 
         [MemberNotNullWhen(returnValue: false, member: nameof(_prevFrame))]
-        private bool IsFirstFrame() => _prevFrame == null;
+        internal bool IsFirstFrame() => _prevFrame == null;
 
 
         private bool IsSpare() => _firstThrow.HasValue &&
@@ -207,6 +203,11 @@ namespace BowlingScoreCalculator.Domain
 
         private bool IsStrike() => _firstThrow.HasValue &&
                                   _firstThrow.Value == MaxPossiblePinsDownedInOneFrame;
+
+        private int GetPrevProgressScore()
+        {
+            return IsFirstFrame() ? 0 : _prevFrame.ProgressScore!.Value;
+        }
 
         public override string ToString()
         {
