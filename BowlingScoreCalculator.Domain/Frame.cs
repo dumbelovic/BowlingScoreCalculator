@@ -5,14 +5,15 @@ namespace BowlingScoreCalculator.Domain
 {
     internal class Frame
     {
-        private const int MaxPossiblePinsDownedInOneFrame = 10;
+        private const int MaxPossiblePinsDowned = 10;
 
-        private int? _firstThrow;
-        private int? _secondThrow;
-        private int? _progressScore;
         private readonly Frame? _prevFrame;
         private Frame? _nextFrame;
 
+        protected int? _firstThrow;
+        protected int? _secondThrow;
+        protected int? _progressScore;
+        
         public int Position => _prevFrame == null ? 1 : _prevFrame.Position + 1;
         public int? ProgressScore => _progressScore;
         public Frame? PrevFrame => _prevFrame;
@@ -20,8 +21,7 @@ namespace BowlingScoreCalculator.Domain
 
         
         private Frame()
-        {
-        }
+        { }
 
         protected Frame(Frame prevFrame)
         {
@@ -29,48 +29,25 @@ namespace BowlingScoreCalculator.Domain
             _prevFrame.SetNextFrame(this);
         }
 
-        internal bool IsCompleted()
-        {
-            return IsStrike() || _secondThrow.HasValue;
-        }
+        internal virtual bool IsCompleted() => IsStrike() || _secondThrow.HasValue;
 
-        internal static Frame First()
-        {
-            return new Frame();
-        }
+        internal static Frame First() => new();
 
-        internal static Frame After(Frame prevFrame)
-        {
-            return new Frame(prevFrame);
-        }
+        internal static Frame After(Frame prevFrame) => new(prevFrame);
 
-        internal static Frame Last(Frame prevFrame)
-        {
-            return new LastFrame(prevFrame);
-        }
+        internal static Frame Last(Frame prevFrame) => new LastFrame(prevFrame);
 
-        internal void SetNextFrame(Frame frame)
-        {
-            _nextFrame = frame;
-        }
+        internal void SetNextFrame(Frame frame) => _nextFrame = frame;
 
-        internal bool TryToGetNextTwo(out int sumNextTwo)
+        protected virtual bool TryToGetNextTwo(out int sumNextTwo)
         {
             sumNextTwo = 0;
 
             if (IsStrike())
             {
-                if (IsLastFrame())
+                if (_nextFrame!.TryToGetNextOne(out int nextOne))
                 {
-                    if (_firstThrow.HasValue && _secondThrow.HasValue)
-                    {
-                        sumNextTwo = _firstThrow.Value + _secondThrow.Value;
-                        return true;
-                    }
-                }
-                else if (_nextFrame.TryToGetNextOne(out int nextOne))
-                {
-                    sumNextTwo = MaxPossiblePinsDownedInOneFrame + nextOne;
+                    sumNextTwo = MaxPossiblePinsDowned + nextOne;
                     return true;
                 }
             }
@@ -96,18 +73,8 @@ namespace BowlingScoreCalculator.Domain
 
         internal void ThrowBall(byte pinsDowned)
         {
-            ThrowBallGuard(pinsDowned);
-            
-            if (!_firstThrow.HasValue)
-            {
-                _firstThrow = pinsDowned;
-            }
-            else if (!_secondThrow.HasValue)
-            {
-                _secondThrow = pinsDowned;
-            }
-
-            TryToSetScore();
+            Guard(pinsDowned);
+            SetPinDowned(pinsDowned);
         }
 
         internal void TryToSetScore()
@@ -119,72 +86,81 @@ namespace BowlingScoreCalculator.Domain
                 TryToSetLocalScore();
         }
 
-        private void ThrowBallGuard(byte pinsDowned)
+        private void Guard(byte pinsDowned)
         {
-            if (pinsDowned > MaxPossiblePinsDownedInOneFrame)
+            GuardCommon(pinsDowned);
+            ExtendGuard(pinsDowned);
+        }
+
+        protected virtual void ExtendGuard(byte pinsDowned)
+        {
+            if (_firstThrow.HasValue && _firstThrow + pinsDowned > MaxPossiblePinsDowned)
             {
-                throw new FrameException(Position, $"Can not down more then {MaxPossiblePinsDownedInOneFrame} pins in one throw.");
+                throw new FrameException(Position, $"Can not down more than {MaxPossiblePinsDowned} in first two throws.");
             }
 
             if (IsStrike())
             {
-                // this exception is because possible bug in engine
                 throw new System.Exception("Can not throw second ball when first is strike");
-            }
-
-            if (_firstThrow.HasValue && _firstThrow + pinsDowned > MaxPossiblePinsDownedInOneFrame)
-            {
-                throw new FrameException(Position, $"Can not down more than {MaxPossiblePinsDownedInOneFrame} in one frame.");
             }
 
             if (_firstThrow.HasValue && _secondThrow.HasValue)
             {
-                throw new FrameException(Position, "Can not throw ball more than two times in one frame.");
+                throw new System.Exception("Can not throw ball more than two times if frame is not last frame.");
             }
         }
 
-        private void TryToSetLocalScore()
+        protected virtual bool SetPinDowned(byte pinsDowned)
+        {
+            if (!_firstThrow.HasValue)
+            {
+                _firstThrow = pinsDowned;
+                return true;
+            }
+            else if (!_secondThrow.HasValue)
+            {
+                _secondThrow = pinsDowned;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void GuardCommon(byte pinsDowned)
+        {
+            if (pinsDowned > MaxPossiblePinsDowned)
+            {
+                throw new FrameException(Position, $"Can not down more then {MaxPossiblePinsDowned} pins in one throw.");
+            }
+        }
+
+        protected virtual void TryToSetLocalScore()
         {
             if (_progressScore.HasValue)
                 throw new FrameException(Position, "Can not set progress score more than once");
 
+            if (!IsCompleted())
+                return;
+
             if (IsStrike())
             {
-                if (IsLastFrame())
+                if (_nextFrame!.TryToGetNextTwo(out int sumNextTwo))
                 {
-
-                }
-                else if (_nextFrame.TryToGetNextTwo(out int sumNextTwo))
-                {
-                    _progressScore = GetPrevProgressScore() + MaxPossiblePinsDownedInOneFrame + sumNextTwo;
+                    _progressScore = GetPrevProgressScore() + MaxPossiblePinsDowned + sumNextTwo;
                 }
             }
             else if (IsSpare())
             {
-                if (IsLastFrame())
+                if (_nextFrame!.TryToGetNextOne(out int nextOne))
                 {
-
-                }
-                else
-                {
-                    if (_nextFrame.TryToGetNextOne(out int nextOne))
-                    {
-                        _progressScore = GetPrevProgressScore() + MaxPossiblePinsDownedInOneFrame + nextOne;
-                    }
+                    _progressScore = GetPrevProgressScore() + MaxPossiblePinsDowned + nextOne;
                 }
             }
             else
             {
-                if (IsLastFrame())
+                if (_firstThrow.HasValue && _secondThrow.HasValue)
                 {
-
-                }
-                else
-                {
-                    if (_firstThrow.HasValue && _secondThrow.HasValue)
-                    {
-                        _progressScore = GetPrevProgressScore() + _firstThrow.Value + _secondThrow.Value;
-                    }
+                    _progressScore = GetPrevProgressScore() + _firstThrow.Value + _secondThrow.Value;
                 }
             }
         }
@@ -197,14 +173,16 @@ namespace BowlingScoreCalculator.Domain
         internal bool IsFirstFrame() => _prevFrame == null;
 
 
-        private bool IsSpare() => _firstThrow.HasValue &&
-                                 _secondThrow.HasValue &&
-                                 _firstThrow + _secondThrow == MaxPossiblePinsDownedInOneFrame;
+        protected bool IsSpare() => 
+            _firstThrow.HasValue &&
+            _secondThrow.HasValue &&
+            _firstThrow + _secondThrow == MaxPossiblePinsDowned;
 
-        private bool IsStrike() => _firstThrow.HasValue &&
-                                  _firstThrow.Value == MaxPossiblePinsDownedInOneFrame;
+        protected bool IsStrike() => 
+            _firstThrow.HasValue &&
+            _firstThrow.Value == MaxPossiblePinsDowned;
 
-        private int GetPrevProgressScore()
+        protected int GetPrevProgressScore()
         {
             return IsFirstFrame() ? 0 : _prevFrame.ProgressScore!.Value;
         }

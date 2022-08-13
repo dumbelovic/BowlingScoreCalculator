@@ -22,7 +22,7 @@ namespace BowlingScoreCalculator.Domain.Tests
             game.ThrowBall(3);
             var ex = Assert.Throws<FrameException>(() => game.ThrowBall(8));
 
-            Assert.Equal("Frame 1 error. Can not down more than 10 in one frame.", ex.Message);
+            Assert.Equal("Frame 1 error. Can not down more than 10 in first two throws.", ex.Message);
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         }
 
         [Fact]
-        public void TwoSuccessiveStrikes()
+        public void TwoSuccessiveStrikesProgressScoreCanNotBeEvaluated()
         {
             var game = new TenPinBowlingGame();
 
@@ -122,7 +122,125 @@ namespace BowlingScoreCalculator.Domain.Tests
         }
 
         [Fact]
-        public void PerfectGame()
+        public void TwoSuccessiveStrikesProgressScoreOfFirstStrikeShouldBeEvaluatedAfterNextOneThrow()
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+            game.ThrowBall(5);
+
+            var scores = game.FrameProgressScores();
+
+            Assert.Equal("25", scores[0]);
+            Assert.Equal("*", scores[1]);
+            Assert.Equal("*", scores[2]);
+        }
+
+        [Fact]
+        public void TwoSuccessiveStrikesProgressScoreOfBothStrikesShouldBeEvaluatedAfterNextTwoThrows()
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            var scores = game.FrameProgressScores();
+
+            Assert.Equal("25", scores[0]);
+            Assert.Equal("43", scores[1]);
+            Assert.Equal("51", scores[2]);
+        }
+
+        [Fact]
+        public void ThreeSuccessiveStrikesProgressScoreOfFirstStrikeShouldBeEvaluated()
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+
+            var scores = game.FrameProgressScores();
+
+            Assert.Equal("30", scores[0]);
+            Assert.Equal("*", scores[1]);
+            Assert.Equal("*", scores[2]);
+        }
+
+        [Fact]
+        public void FourSuccessiveStrikesProgressScoreOfFirstTwoStrikesShouldBeEvaluated()
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+
+            var scores = game.FrameProgressScores();
+
+            Assert.Equal("30", scores[0]);
+            Assert.Equal("60", scores[1]);
+            Assert.Equal("*", scores[2]);
+            Assert.Equal("*", scores[3]);
+        }
+
+        [Fact]
+        public void GameShouldBeCompletedAfterTwentyNormalThrows()
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            game.ThrowBall(5);
+            game.ThrowBall(3);
+
+            var scores = game.FrameProgressScores();
+
+            Assert.Equal("8", scores[0]);
+            Assert.Equal("16", scores[1]);
+            Assert.Equal("24", scores[2]);
+            Assert.Equal("32", scores[3]);
+            Assert.Equal("40", scores[4]);
+            Assert.Equal("48", scores[5]);
+            Assert.Equal("56", scores[6]);
+            Assert.Equal("64", scores[7]);
+            Assert.Equal("72", scores[8]);
+            Assert.Equal("80", scores[9]);
+
+            Assert.True(game.GameCompeted);
+        }
+
+        [Fact]
+        public void GameShouldBeCompletedAfterTwelveStrikes()
         {
             var game = new TenPinBowlingGame();
 
@@ -151,6 +269,8 @@ namespace BowlingScoreCalculator.Domain.Tests
             Assert.Equal("240", scores[7]);
             Assert.Equal("270", scores[8]);
             Assert.Equal("300", scores[9]);
+
+            Assert.True(game.GameCompeted);
         }
     }
 }

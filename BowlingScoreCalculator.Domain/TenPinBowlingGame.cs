@@ -15,6 +15,8 @@ namespace BowlingScoreCalculator.Domain
         
         private bool _gameCompeted = false;
 
+        public bool GameCompeted => _gameCompeted;
+
         public TenPinBowlingGame()
         {
             _frames = InitFrames();
@@ -29,6 +31,7 @@ namespace BowlingScoreCalculator.Domain
             }
 
             _currentFrame.ThrowBall(pinsDowned);
+            _currentFrame.TryToSetScore();
 
             if (_currentFrame.IsCompleted())
             {
