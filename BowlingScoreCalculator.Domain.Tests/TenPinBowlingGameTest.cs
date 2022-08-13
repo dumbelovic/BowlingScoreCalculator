@@ -240,7 +240,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         }
 
         [Fact]
-        public void GameShouldBeCompletedAfterTwelveStrikes()
+        public void GameShouldBeCompletedAfterTwelveStrikes() // Example 1
         {
             var game = new TenPinBowlingGame();
 
@@ -272,5 +272,119 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             Assert.True(game.GameCompeted);
         }
+
+        [Fact]
+        public void SixFramesCompletedAllThrowsOne() // Example 2
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+
+            var scores = game.FrameProgressScores();
+
+            Assert.False(game.GameCompeted);
+
+            Assert.Equal("2", scores[0]);
+            Assert.Equal("4", scores[1]);
+            Assert.Equal("6", scores[2]);
+            Assert.Equal("8", scores[3]);
+            Assert.Equal("10", scores[4]);
+            Assert.Equal("12", scores[5]);
+        }
+
+        [Fact]
+        public void SevenFramesCompletedSpareAndStrikesExample() // Example 3
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(1);
+            game.ThrowBall(9);
+            game.ThrowBall(1);
+            game.ThrowBall(2);
+            game.ThrowBall(8);
+            game.ThrowBall(9);
+            game.ThrowBall(1);
+            game.ThrowBall(10);
+            game.ThrowBall(10);
+
+            var scores = game.FrameProgressScores();
+
+            Assert.False(game.GameCompeted);
+
+            Assert.Equal("2", scores[0]);
+            Assert.Equal("4", scores[1]);
+            Assert.Equal("16", scores[2]);
+            Assert.Equal("35", scores[3]);
+            Assert.Equal("55", scores[4]);
+            Assert.Equal("*", scores[5]);
+            Assert.Equal("*", scores[6]);
+        }
+
+        [Fact]
+        public void GutterBallGameWithTenThrowsShouldBeCompleted()
+        {
+            var game = new TenPinBowlingGame();
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+            game.ThrowBall(0);
+            game.ThrowBall(0);
+
+
+            var scores = game.FrameProgressScores();
+
+            Assert.True(game.GameCompeted);
+
+            Assert.Equal("0", scores[0]);
+            Assert.Equal("0", scores[1]);
+            Assert.Equal("0", scores[2]);
+            Assert.Equal("0", scores[3]);
+            Assert.Equal("0", scores[4]);
+            Assert.Equal("0", scores[5]);
+            Assert.Equal("0", scores[6]);
+            Assert.Equal("0", scores[7]);
+            Assert.Equal("0", scores[8]);
+            Assert.Equal("0", scores[9]);
+        }
+
     }
 }
