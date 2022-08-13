@@ -9,7 +9,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         {
             var game = new TenPinBowlingGame();
 
-            var ex = Assert.Throws<FrameException>(() => game.ThrowBall(11));
+            var ex = Assert.Throws<FrameBadRequestException>(() => game.ThrowBall(11));
 
             Assert.Equal("Frame 1 error. Can not down more then 10 pins in one throw.", ex.Message);
         }
@@ -20,9 +20,9 @@ namespace BowlingScoreCalculator.Domain.Tests
             var game = new TenPinBowlingGame();
 
             game.ThrowBall(3);
-            var ex = Assert.Throws<FrameException>(() => game.ThrowBall(8));
+            var ex = Assert.Throws<FrameBadRequestException>(() => game.ThrowBall(8));
 
-            Assert.Equal("Frame 1 error. Can not down more than 10 in first two throws.", ex.Message);
+            Assert.Equal("Frame 1 error. Can not down more than 10 pins in first two throws.", ex.Message);
         }
 
         [Fact]

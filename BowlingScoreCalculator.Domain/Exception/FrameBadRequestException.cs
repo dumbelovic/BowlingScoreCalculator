@@ -1,9 +1,9 @@
 ﻿
 namespace BowlingScoreCalculator.Domain.Exception
 {
-    public class FrameException : System.Exception
+    public class FrameBadRequestException : BadRequestException
     {
-        public FrameException(int position, string message)
+        public FrameBadRequestException(int position, string message)
         : base($"Frame {position} error. {message}")
         {
                 

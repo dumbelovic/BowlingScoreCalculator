@@ -96,17 +96,17 @@ namespace BowlingScoreCalculator.Domain
         {
             if (_firstThrow.HasValue && _firstThrow + pinsDowned > MaxPossiblePinsDowned)
             {
-                throw new FrameException(Position, $"Can not down more than {MaxPossiblePinsDowned} in first two throws.");
+                throw new FrameBadRequestException(Position, $"Can not down more than {MaxPossiblePinsDowned} pins in first two throws.");
             }
 
             if (IsStrike())
             {
-                throw new System.Exception("Can not throw second ball when first is strike");
+                throw new InvalidOperationException("Can not throw second ball when first is strike");
             }
 
             if (_firstThrow.HasValue && _secondThrow.HasValue)
             {
-                throw new System.Exception("Can not throw ball more than two times if frame is not last frame.");
+                throw new InvalidOperationException("Can not throw ball more than two times if frame is not last frame.");
             }
         }
 
@@ -130,14 +130,14 @@ namespace BowlingScoreCalculator.Domain
         {
             if (pinsDowned > MaxPossiblePinsDowned)
             {
-                throw new FrameException(Position, $"Can not down more then {MaxPossiblePinsDowned} pins in one throw.");
+                throw new FrameBadRequestException(Position, $"Can not down more then {MaxPossiblePinsDowned} pins in one throw.");
             }
         }
 
         protected virtual void TryToSetLocalScore()
         {
             if (_progressScore.HasValue)
-                throw new FrameException(Position, "Can not set progress score more than once");
+                throw new InvalidOperationException("Can not set progress score more than once");
 
             if (!IsCompleted())
                 return;

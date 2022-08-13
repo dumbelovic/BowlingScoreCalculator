@@ -48,7 +48,7 @@ namespace BowlingScoreCalculator.Domain
         protected override void TryToSetLocalScore()
         {
             if (_progressScore.HasValue)
-                throw new FrameException(Position, "Can not set progress score more than once");
+                throw new InvalidOperationException("Can not set progress score more than once");
 
             if (!IsCompleted())
                 return;
