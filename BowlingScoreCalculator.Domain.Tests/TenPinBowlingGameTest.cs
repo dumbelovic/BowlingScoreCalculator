@@ -7,7 +7,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void TryToDownMoreThanTenPinsInOneThrowShouldThrowException()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             var ex = Assert.Throws<FrameBadRequestException>(() => game.ThrowBall(11));
 
@@ -17,7 +17,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void TryToDownMoreThanTenPinsInOneFrameShouldThrowException()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(3);
             var ex = Assert.Throws<FrameBadRequestException>(() => game.ThrowBall(8));
@@ -28,7 +28,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void ProgressScoreShouldBeEvaluatedWhenTwoNormalThrows()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(3);
             game.ThrowBall(4);
@@ -41,7 +41,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void ProgressScoreCanNotBeEvaluatedWhenFirstThrowIsStrike()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
 
@@ -53,7 +53,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void ProgressScoreCanNotBeEvaluatedWhenSecondThrowIsSpare()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(3);
             game.ThrowBall(7);
@@ -66,7 +66,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void ProgressScoreShouldBeEvaluatedWhenSecondThrowIsSpareAfterNextOneThrow()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(7);
             game.ThrowBall(3);
@@ -81,7 +81,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void NextFrameProgressScoreCanNotBeEvaluatedWhenPreviousFrameIsStrike()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(3);
@@ -95,7 +95,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void NextFrameProgressScoreShouldBeEvaluatedWhenPreviousFrameIsStrikeAfterNextTwoThrows()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(3);
@@ -110,7 +110,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void TwoSuccessiveStrikesProgressScoreCanNotBeEvaluated()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(10);
@@ -124,7 +124,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void TwoSuccessiveStrikesProgressScoreOfFirstStrikeShouldBeEvaluatedAfterNextOneThrow()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(10);
@@ -140,7 +140,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void TwoSuccessiveStrikesProgressScoreOfBothStrikesShouldBeEvaluatedAfterNextTwoThrows()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(10);
@@ -157,7 +157,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void ThreeSuccessiveStrikesProgressScoreOfFirstStrikeShouldBeEvaluated()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(10);
@@ -173,7 +173,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void FourSuccessiveStrikesProgressScoreOfFirstTwoStrikesShouldBeEvaluated()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(10);
@@ -191,7 +191,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void GameShouldBeCompletedAfterTwentyNormalThrows()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(5);
             game.ThrowBall(3);
@@ -242,7 +242,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void GameShouldBeCompletedAfterTwelveStrikes() // Example 1
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(10);
             game.ThrowBall(10);
@@ -276,7 +276,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void SixFramesCompletedAllThrowsOne() // Example 2
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(1);
             game.ThrowBall(1);
@@ -306,7 +306,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void SevenFramesCompletedSpareAndStrikesExample() // Example 3
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(1);
             game.ThrowBall(1);
@@ -337,7 +337,7 @@ namespace BowlingScoreCalculator.Domain.Tests
         [Fact]
         public void GutterBallGameWithTenThrowsShouldBeCompleted()
         {
-            var game = new TenPinBowlingGame();
+            var game = TenPinBowlingGameBuilder.Start();
 
             game.ThrowBall(0);
             game.ThrowBall(0);

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using BowlingScoreCalculator.Domain;
+using FluentValidation;
 using MediatR;
 
 namespace BowlingScoreCalculator.Api.Features.Scores
@@ -36,7 +37,7 @@ namespace BowlingScoreCalculator.Api.Features.Scores
         {
             public Task<Response> Handle(Request request, CancellationToken cancellationToken)
             {
-                var game = new Domain.TenPinBowlingGame();
+                var game = TenPinBowlingGameBuilder.Start(); 
 
                 foreach (var pinsDowned in request.PinsDowned)
                 {
