@@ -35,7 +35,7 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("7", scores[0]);
+            Assert.Equal(7, scores[0]);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("*", scores[0]);
+            Assert.Null(scores[0]);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("*", scores[0]);
+            Assert.Null(scores[0]);
         }
 
         [Fact]
@@ -74,8 +74,8 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("15", scores[0]);
-            Assert.Equal("*", scores[1]);
+            Assert.Equal(15, scores[0]);
+            Assert.Null(scores[1]);
         }
 
         [Fact]
@@ -88,8 +88,8 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("*", scores[0]);
-            Assert.Equal("*", scores[1]);
+            Assert.Null(scores[0]);
+            Assert.Null(scores[1]);
         }
 
         [Fact]
@@ -103,8 +103,8 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("18", scores[0]);
-            Assert.Equal("26", scores[1]);
+            Assert.Equal(18, scores[0]);
+            Assert.Equal(26, scores[1]);
         }
 
         [Fact]
@@ -117,8 +117,8 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("*", scores[0]);
-            Assert.Equal("*", scores[1]);
+            Assert.Null(scores[0]);
+            Assert.Null(scores[1]);
         }
 
         [Fact]
@@ -132,9 +132,9 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("25", scores[0]);
-            Assert.Equal("*", scores[1]);
-            Assert.Equal("*", scores[2]);
+            Assert.Equal(25, scores[0]);
+            Assert.Null(scores[1]);
+            Assert.Null(scores[2]);
         }
 
         [Fact]
@@ -149,9 +149,9 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("25", scores[0]);
-            Assert.Equal("43", scores[1]);
-            Assert.Equal("51", scores[2]);
+            Assert.Equal(25, scores[0]);
+            Assert.Equal(43, scores[1]);
+            Assert.Equal(51, scores[2]);
         }
 
         [Fact]
@@ -165,9 +165,9 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("30", scores[0]);
-            Assert.Equal("*", scores[1]);
-            Assert.Equal("*", scores[2]);
+            Assert.Equal(30, scores[0]);
+            Assert.Null(scores[1]);
+            Assert.Null(scores[2]);
         }
 
         [Fact]
@@ -182,10 +182,10 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("30", scores[0]);
-            Assert.Equal("60", scores[1]);
-            Assert.Equal("*", scores[2]);
-            Assert.Equal("*", scores[3]);
+            Assert.Equal(30, scores[0]);
+            Assert.Equal(60, scores[1]);
+            Assert.Null(scores[2]);
+            Assert.Null(scores[3]);
         }
 
         [Fact]
@@ -225,16 +225,16 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("8", scores[0]);
-            Assert.Equal("16", scores[1]);
-            Assert.Equal("24", scores[2]);
-            Assert.Equal("32", scores[3]);
-            Assert.Equal("40", scores[4]);
-            Assert.Equal("48", scores[5]);
-            Assert.Equal("56", scores[6]);
-            Assert.Equal("64", scores[7]);
-            Assert.Equal("72", scores[8]);
-            Assert.Equal("80", scores[9]);
+            Assert.Equal(8, scores[0]);
+            Assert.Equal(16, scores[1]);
+            Assert.Equal(24, scores[2]);
+            Assert.Equal(32, scores[3]);
+            Assert.Equal(40, scores[4]);
+            Assert.Equal(48, scores[5]);
+            Assert.Equal(56, scores[6]);
+            Assert.Equal(64, scores[7]);
+            Assert.Equal(72, scores[8]);
+            Assert.Equal(80, scores[9]);
 
             Assert.True(game.GameCompeted);
         }
@@ -259,16 +259,16 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             var scores = game.FrameProgressScores();
 
-            Assert.Equal("30", scores[0]);
-            Assert.Equal("60", scores[1]);
-            Assert.Equal("90", scores[2]);
-            Assert.Equal("120", scores[3]);
-            Assert.Equal("150", scores[4]);
-            Assert.Equal("180", scores[5]);
-            Assert.Equal("210", scores[6]);
-            Assert.Equal("240", scores[7]);
-            Assert.Equal("270", scores[8]);
-            Assert.Equal("300", scores[9]);
+            Assert.Equal(30, scores[0]);
+            Assert.Equal(60, scores[1]);
+            Assert.Equal(90, scores[2]);
+            Assert.Equal(120, scores[3]);
+            Assert.Equal(150, scores[4]);
+            Assert.Equal(180, scores[5]);
+            Assert.Equal(210, scores[6]);
+            Assert.Equal(240, scores[7]);
+            Assert.Equal(270, scores[8]);
+            Assert.Equal(300, scores[9]);
 
             Assert.True(game.GameCompeted);
         }
@@ -295,12 +295,12 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             Assert.False(game.GameCompeted);
 
-            Assert.Equal("2", scores[0]);
-            Assert.Equal("4", scores[1]);
-            Assert.Equal("6", scores[2]);
-            Assert.Equal("8", scores[3]);
-            Assert.Equal("10", scores[4]);
-            Assert.Equal("12", scores[5]);
+            Assert.Equal(2, scores[0]);
+            Assert.Equal(4, scores[1]);
+            Assert.Equal(6, scores[2]);
+            Assert.Equal(8, scores[3]);
+            Assert.Equal(10, scores[4]);
+            Assert.Equal(12, scores[5]);
         }
 
         [Fact]
@@ -325,13 +325,13 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             Assert.False(game.GameCompeted);
 
-            Assert.Equal("2", scores[0]);
-            Assert.Equal("4", scores[1]);
-            Assert.Equal("16", scores[2]);
-            Assert.Equal("35", scores[3]);
-            Assert.Equal("55", scores[4]);
-            Assert.Equal("*", scores[5]);
-            Assert.Equal("*", scores[6]);
+            Assert.Equal(2, scores[0]);
+            Assert.Equal(4, scores[1]);
+            Assert.Equal(16, scores[2]);
+            Assert.Equal(35, scores[3]);
+            Assert.Equal(55, scores[4]);
+            Assert.Null(scores[5]);
+            Assert.Null(scores[6]);
         }
 
         [Fact]
@@ -374,16 +374,16 @@ namespace BowlingScoreCalculator.Domain.Tests
 
             Assert.True(game.GameCompeted);
 
-            Assert.Equal("0", scores[0]);
-            Assert.Equal("0", scores[1]);
-            Assert.Equal("0", scores[2]);
-            Assert.Equal("0", scores[3]);
-            Assert.Equal("0", scores[4]);
-            Assert.Equal("0", scores[5]);
-            Assert.Equal("0", scores[6]);
-            Assert.Equal("0", scores[7]);
-            Assert.Equal("0", scores[8]);
-            Assert.Equal("0", scores[9]);
+            Assert.Equal(0, scores[0]);
+            Assert.Equal(0, scores[1]);
+            Assert.Equal(0, scores[2]);
+            Assert.Equal(0, scores[3]);
+            Assert.Equal(0, scores[4]);
+            Assert.Equal(0, scores[5]);
+            Assert.Equal(0, scores[6]);
+            Assert.Equal(0, scores[7]);
+            Assert.Equal(0, scores[8]);
+            Assert.Equal(0, scores[9]);
         }
 
     }

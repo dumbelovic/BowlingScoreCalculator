@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using BowlingScoreCalculator.Domain.Exception;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BowlingScoreCalculator.Api.Middleware
 {
@@ -23,10 +24,10 @@ namespace BowlingScoreCalculator.Api.Middleware
         private static async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
         {
             var statusCode = GetStatusCode(exception);
-            var response = new
+            var response = new ProblemDetails()
             {
-                status = statusCode,
-                detail = exception.Message,
+                Status = statusCode,
+                Detail = exception.Message
             };
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = statusCode;

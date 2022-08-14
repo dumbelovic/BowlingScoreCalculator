@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BowlingScoreCalculator.Domain.Exception;
 
 namespace BowlingScoreCalculator.Domain
 {
@@ -27,12 +28,17 @@ namespace BowlingScoreCalculator.Domain
         {
             if (_gameCompeted)
             {
-                throw new System.Exception("Can not throw ball when game is completed.");
+                throw new GameBadRequestException("Can not throw ball when game is completed.");
             }
 
             _currentFrame.ThrowBall(pinsDowned);
             _currentFrame.TryToSetScore();
 
+            ContinueGame();
+        }
+
+        private void ContinueGame()
+        {
             if (_currentFrame.IsCompleted())
             {
                 if (_currentFrame.IsLastFrame())
@@ -46,11 +52,12 @@ namespace BowlingScoreCalculator.Domain
             }
         }
 
-        public List<string> FrameProgressScores()
+        public List<int?> FrameProgressScores()
         {
             return _frames
                 .Where(f => f.Position <= _currentFrame.Position)
-                .Select(f => f.ProgressScore.HasValue ? f.ProgressScore.ToString()! : "*").ToList();
+                .Select(f => f.ProgressScore)
+                .ToList();
         }
 
         private IReadOnlyCollection<Frame> InitFrames()

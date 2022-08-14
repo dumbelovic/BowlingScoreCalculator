@@ -39,13 +39,13 @@ namespace BowlingScoreCalculator.Domain
 
         internal void SetNextFrame(Frame frame) => _nextFrame = frame;
 
-        protected virtual bool TryToGetNextTwo(out int sumNextTwo)
+        protected virtual bool TryToGetNextTwoPinsDowns(out int sumNextTwo)
         {
             sumNextTwo = 0;
 
             if (IsStrike())
             {
-                if (_nextFrame!.TryToGetNextOne(out int nextOne))
+                if (_nextFrame!.TryToGetNextOnePinsDown(out int nextOne))
                 {
                     sumNextTwo = MaxPossiblePinsDowned + nextOne;
                     return true;
@@ -60,7 +60,7 @@ namespace BowlingScoreCalculator.Domain
             return false;
         }
 
-        internal bool TryToGetNextOne(out int nextOne)
+        internal bool TryToGetNextOnePinsDown(out int nextOne)
         {
             nextOne = 0;
 
@@ -144,14 +144,14 @@ namespace BowlingScoreCalculator.Domain
 
             if (IsStrike())
             {
-                if (_nextFrame!.TryToGetNextTwo(out int sumNextTwo))
+                if (_nextFrame!.TryToGetNextTwoPinsDowns(out int sumNextTwo))
                 {
                     _progressScore = GetPrevProgressScore() + MaxPossiblePinsDowned + sumNextTwo;
                 }
             }
             else if (IsSpare())
             {
-                if (_nextFrame!.TryToGetNextOne(out int nextOne))
+                if (_nextFrame!.TryToGetNextOnePinsDown(out int nextOne))
                 {
                     _progressScore = GetPrevProgressScore() + MaxPossiblePinsDowned + nextOne;
                 }

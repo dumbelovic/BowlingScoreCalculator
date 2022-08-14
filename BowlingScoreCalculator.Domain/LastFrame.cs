@@ -63,7 +63,7 @@ namespace BowlingScoreCalculator.Domain
             }
         }
 
-        protected override bool TryToGetNextTwo(out int sumNextTwo)
+        protected override bool TryToGetNextTwoPinsDowns(out int sumNextTwo)
         {
             sumNextTwo = 0;
 

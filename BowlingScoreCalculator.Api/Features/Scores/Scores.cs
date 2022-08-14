@@ -19,10 +19,17 @@ namespace BowlingScoreCalculator.Api.Features.Scores
 
         public class Validator : AbstractValidator<Request>
         {
+            private const byte PinsDownedMaxInputLength = (2 * 9) + 3;
             public Validator()
             {
-                RuleFor(r => r.PinsDowned).NotEmpty().WithMessage("PinsDowned collection can not be empty.");
-            }
+                RuleFor(r => r.PinsDowned)
+                    .NotEmpty()
+                    .WithMessage("PinsDowned collection can not be empty.");
+
+                RuleFor(r => r.PinsDowned)
+                    .Must(pins => pins.Count <= PinsDownedMaxInputLength)
+                    .WithMessage($"PinsDowned collection can not contain more than {PinsDownedMaxInputLength} numbers.");
+            } 
         }
 
         public class ScoresHandler : IRequestHandler<Request, Response>
@@ -36,7 +43,14 @@ namespace BowlingScoreCalculator.Api.Features.Scores
                     game.ThrowBall(pinsDowned);
                 }
 
-                var response = new Response() { FrameProgressScores = game.FrameProgressScores() };
+                var response = new Response()
+                {
+                    FrameProgressScores = game.FrameProgressScores()
+                        .Select(f=> f.HasValue ? f.ToString()! : "*")
+                        .ToList(),
+
+                    GameCompleted = game.GameCompeted
+                };
                 
                 return Task.FromResult(response);
             }
