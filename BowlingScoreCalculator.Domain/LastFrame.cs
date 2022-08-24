@@ -15,7 +15,7 @@ namespace BowlingScoreCalculator.Domain
             : base(prevFrame)
         {}
 
-        internal override bool IsCompleted()
+        public override bool IsCompleted()
         {
             if (IsStrike() || IsSpare())
             {

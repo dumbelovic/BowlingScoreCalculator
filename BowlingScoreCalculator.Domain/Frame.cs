@@ -29,15 +29,15 @@ namespace BowlingScoreCalculator.Domain
             _prevFrame.SetNextFrame(this);
         }
 
-        internal virtual bool IsCompleted() => IsStrike() || _secondThrow.HasValue;
+        public virtual bool IsCompleted() => IsStrike() || _secondThrow.HasValue;
 
-        internal static Frame First() => new();
+        public static Frame First() => new();
 
-        internal static Frame After(Frame prevFrame) => new(prevFrame);
+        public static Frame After(Frame prevFrame) => new(prevFrame);
 
-        internal static Frame Last(Frame prevFrame) => new LastFrame(prevFrame);
+        private static Frame Last(Frame prevFrame) => new LastFrame(prevFrame);
 
-        internal void SetNextFrame(Frame frame) => _nextFrame = frame;
+        private void SetNextFrame(Frame frame) => _nextFrame = frame;
 
         protected virtual bool TryToGetNextTwoPinsDowns(out int sumNextTwo)
         {
@@ -60,7 +60,7 @@ namespace BowlingScoreCalculator.Domain
             return false;
         }
 
-        internal bool TryToGetNextOnePinsDown(out int nextOne)
+        private bool TryToGetNextOnePinsDown(out int nextOne)
         {
             nextOne = 0;
 
@@ -71,13 +71,13 @@ namespace BowlingScoreCalculator.Domain
             return true;
         }
 
-        internal void ThrowBall(byte pinsDowned)
+        public void ThrowBall(byte pinsDowned)
         {
             Guard(pinsDowned);
             SetPinDowned(pinsDowned);
         }
 
-        internal void TryToSetScore()
+        public void TryToSetScore()
         {
             if (!IsFirstFrame() && !_prevFrame.ProgressScore.HasValue)
                 _prevFrame.TryToSetScore();
@@ -167,13 +167,13 @@ namespace BowlingScoreCalculator.Domain
 
         [MemberNotNullWhen(returnValue: false, member: nameof(_nextFrame))]
         [MemberNotNullWhen(returnValue: false, member: nameof(NextFrame))]
-        internal bool IsLastFrame() => _nextFrame == null;
+        public bool IsLastFrame() => _nextFrame == null;
 
         [MemberNotNullWhen(returnValue: false, member: nameof(_prevFrame))]
-        internal bool IsFirstFrame() => _prevFrame == null;
+        private bool IsFirstFrame() => _prevFrame == null;
 
 
-        protected bool IsSpare() => 
+        protected  bool IsSpare() => 
             _firstThrow.HasValue &&
             _secondThrow.HasValue &&
             _firstThrow + _secondThrow == MaxPossiblePinsDowned;
